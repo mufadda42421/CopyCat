@@ -1,0 +1,6 @@
+{
+  "name": "CopyCat - Cat-Themed Chrome Clipboard Manager",
+  "description": "Copy less. Do more. Meow! A cute, premium, cat-themed clipboard manager for Google Chrome with Manifest V3 architecture, instant search, collections, and local privacy.",
+  "requestFramePermissions": ["clipboard-read", "clipboard-write"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CopyCat Popup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lavender: #B69AFF;
+      --purple: #7047D7;
+      --purple-hover: #5D37BD;
+      --cream: #FFF8EE;
+      --dark-navy: #24203D;
+      --soft-pink: #FFD9E4;
+      --card-bg: #FFFFFF;
+      --card-border: #E8E1F5;
+      --text-muted: #64748B;
+    }
+
+    body.dark {
+      --cream: #1A172A;
+      --dark-navy: #F3EDFD;
+      --card-bg: #24203D;
+      --card-border: #383256;
+      --text-muted: #94A3B8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 380px;
+      height: 580px;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background: var(--cream);
+      color: var(--dark-navy);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    header {
+      padding: 12px 16px;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .paw-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--purple);
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(112, 71, 215, 0.2);
+    }
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--purple);
+      line-height: 1.1;
+    }
+
+    .brand-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .icon-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .icon-btn:hover {
+      background: rgba(112, 71, 215, 0.1);
+      color: var(--purple);
+    }
+
+    .filter-section {
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.6);
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    body.dark .filter-section {
+      background: rgba(36, 32, 61, 0.6);
+    }
+
+    .search-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 7px 12px 7px 32px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--dark-navy);
+      font-size: 12px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .search-input:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 2px rgba(112, 71, 215, 0.15);
+    }
+
+    .category-pills {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .category-pills::-webkit-scrollbar { display: none; }
+
+    .cat-pill {
+      padding: 3px 9px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      background: rgba(112, 71, 215, 0.08);
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+
+    .cat-pill.active {
+      background: var(--purple);
+      color: #FFF;
+      box-shadow: 0 2px 6px rgba(112, 71, 215, 0.25);
+    }
+
+    .clip-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .clip-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 12px;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .clip-card.pinned {
+      background: #FFF8EE;
+      border-color: var(--lavender);
+    }
+
+    body.dark .clip-card.pinned {
+      background: #201C38;
+      border-color: var(--lavender);
+    }
+
+    .clip-card:hover {
+      border-color: var(--lavender);
+      box-shadow: 0 4px 12px rgba(112, 71, 215, 0.08);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-meta strong {
+      color: var(--dark-navy);
+      text-transform: capitalize;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .btn-action-icon {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 3px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-action-icon:hover {
+      color: var(--purple);
+      background: rgba(112, 71, 215, 0.08);
+    }
+
+    .btn-action-icon.pinned {
+      color: var(--purple);
+      background: rgba(182, 154, 255, 0.2);
+    }
+    .btn-action-icon.favorite {
+      color: #F43F5E;
+    }
+
+    .content-box {
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 12px;
+      line-height: 1.45;
+      cursor: pointer;
+      word-break: break-word;
+      white-space: pre-wrap;
+      max-height: 64px;
+      overflow: hidden;
+      transition: background 0.15s;
+    }
+    body.dark .content-box {
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .content-box:hover {
+      background: rgba(112, 71, 215, 0.06);
+    }
+    .content-box.code-type {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: #1E1B33;
+      color: #F3EDFD;
+    }
+
+    .color-swatch-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .color-box {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 1px solid rgba(0,0,0,0.1);
+      box-shadow: inset 0 0 2px rgba(0,0,0,0.1);
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .btn-copy {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 10px;
+      border: none;
+      background: var(--purple);
+      color: #FFF;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(112, 71, 215, 0.25);
+      transition: all 0.15s;
+    }
+    .btn-copy:hover {
+      background: var(--purple-hover);
+    }
+    .btn-copy.copied {
+      background: #10B981;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+    }
+
+    .empty-state {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .empty-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--purple);
+      margin-top: 14px;
+    }
+
+    .empty-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      max-width: 240px;
+      line-height: 1.4;
+    }
+
+    .btn-wake {
+      margin-top: 14px;
+      padding: 7px 14px;
+      border-radius: 10px;
+      background: var(--purple);
+      color: #FFF;
+      font-size: 11px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    footer {
+      padding: 10px 16px;
+      background: var(--card-bg);
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .btn-open-dashboard {
+      background: transparent;
+      border: none;
+      color: var(--purple);
+      font-weight: 700;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-open-dashboard:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand-group">
+      <div class="paw-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 11.5C9.5 11.5 7.5 13.5 7.5 16C7.5 18 9 20 12 20C15 20 16.5 18 16.5 16C16.5 13.5 14.5 11.5 12 11.5Z"/>
+          <ellipse cx="6" cy="10" rx="1.8" ry="2.4" transform="rotate(-15 6 10)"/>
+          <ellipse cx="10" cy="7.2" rx="1.8" ry="2.4" transform="rotate(-5 10 7.2)"/>
+          <ellipse cx="14" cy="7.2" rx="1.8" ry="2.4" transform="rotate(5 14 7.2)"/>
+          <ellipse cx="18" cy="10" rx="1.8" ry="2.4" transform="rotate(15 18 10)"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">CopyCat</div>
+        <div class="brand-sub" id="clipCount">0 clips saved</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="icon-btn" id="btnPaste" title="Paste from clipboard">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="btnTheme" title="Toggle theme">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="btnDashboardTop" title="Open full dashboard">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="filter-section">
+    <div class="search-wrapper">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search clips...">
+    </div>
+
+    <div class="category-pills">
+      <button class="cat-pill active" data-cat="all">All</button>
+      <button class="cat-pill" data-cat="text">Text</button>
+      <button class="cat-pill" data-cat="code">Code</button>
+      <button class="cat-pill" data-cat="link">Links</button>
+      <button class="cat-pill" data-cat="pinned">📌 Pinned</button>
+      <button class="cat-pill" data-cat="favorite">❤️ Favorites</button>
+    </div>
+  </div>
+
+  <div class="clip-list" id="clipList"></div>
+
+  <footer>
+    <span style="display:flex;align-items:center;gap:4px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="#7047D7">
+        <path d="M12 11.5C9.5 11.5 7.5 13.5 7.5 16C7.5 18 9 20 12 20C15 20 16.5 18 16.5 16C16.5 13.5 14.5 11.5 12 11.5Z"/>
+      </svg>
+      Copy less. Do more. Meow!
+    </span>
+    <button class="btn-open-dashboard" id="btnDashboardBottom">
+      <span>Dashboard</span>
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+        <polyline points="15 3 21 3 21 9"/>
+        <line x1="10" y1="14" x2="21" y2="3"/>
+      </svg>
+    </button>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
